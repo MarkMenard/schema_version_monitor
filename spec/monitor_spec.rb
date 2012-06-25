@@ -12,10 +12,13 @@ describe SchemaMigrationMonitor::Monitor do
   end
 
   describe "when there are no pending migrations" do
+    before(:each) do
+      get_migrator_with_pending_migrations([])
+    end
+
     it "should do nothing" do
       output_stream = get_output_stream_mock
       output_stream.should_receive(:write).exactly(0).times
-      get_migrator_with_pending_migrations([])
       SchemaMigrationMonitor::Monitor.new(output_stream).execute
     end
   end
@@ -38,6 +41,7 @@ describe SchemaMigrationMonitor::Monitor do
     mock_migrator = mock('migrator') 
     mock_migrator.expects(:pending_migrations).returns(pending_migrations)
     ActiveRecord::Migrator.expects(:new).returns(mock_migrator)
+    mock_migrator
   end
 
   def get_output_stream_mock
