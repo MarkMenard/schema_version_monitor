@@ -1,60 +1,41 @@
-module SchemaMigrationMonitor
-  class ConfigFileException < StandardError; end
+require 'active_record'
+require File.dirname(__FILE__) + '/migration_path_service'
 
-  class SchemaMigrationMonitor
+module ActiveRecord
+  module ConnectionAdapters
+    class ConnectionHandler
 
+      alias_method :old_establish_connection, :establish_connection
 
-    attr_accessor :environment
-    def initialize
-      @environment = YAML::readstuff
-    end
+      def establish_connection(name, spec)
+        result = old_establish_connection(name,spec)
+        SchemaMigrationMonitor.new.execute
+        result
+      end
 
-    def execute
     end
   end
 end
 
 
-__END__
-
-
-
-ActiveRecord::Base.establish_connection(
-  :adapter  => 'mysql',
-  :database => 'database',
-  :username => 'user',
-  :password => 'password',
-  :host     => 'localhost')
-
-require 'rubygems'
-require 'active_record'
-require 'yaml'
-
-dbconfig = YAML::load(File.open('config/database.yml'))
-ActiveRecord::Base.establish_connection(dbconfig)
-
-migrator = ActiveRecord::Migrator.new(:up, Rails.root.join('db','migrate'))
-migrator.pending_migrations
-
-
-require "active_record/connection_adapters/abstract/connection_pool"
-puts "alias method chaining"
-module ActiveRecord
-  module ConnectionAdapters
-    class ConnectionHandler
-      def establish_connection_with_schema_migration_monitor(name, spec)
-        original_result = establish_connection_without_schema_migration_monitor(name, spec)
-
-        puts
-        puts "Looks Like a connection is being established!"
-        puts name
-        puts spec.inspect
-        puts
-
-        original_result
-      end
-      
-      alias_method_chain :establish_connection, :schema_migration_monitor
+module SchemaMigrationMonitor
+  class Monitor
+    
+    def initialize(output_stream = $stdout)
+      @migration_path = MigrationPathService.execute
+      @output_stream = output_stream
     end
+
+    def execute
+      pending_migrations = get_pending_migrations
+      return if pending_migrations.empty?
+
+      @output_stream.write("The following migration[s] need to be run #{pending_migrations.join(', ')}")
+    end
+
+    def get_pending_migrations
+      ActiveRecord::Migrator.new(:up, @migration_path).pending_migrations
+    end
+
   end
 end

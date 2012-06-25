@@ -23,4 +23,3 @@ class MigrationPathService
     end
   end
 end
-

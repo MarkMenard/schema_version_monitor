@@ -1,31 +1,46 @@
 require 'spec_helper'
 
 describe SchemaMigrationMonitor::Monitor do
-  it "should attempt to read a ./.schema_migration_monitor file upon initialization" do
-    
-    SchemaMigrationMonitor.any_instance.stubs(:load_config_database_yml).returns()
 
-    monitor = SchemaMigrationMonitor::Monitor.new
-    monitor.environment.should be something
+  before(:each) do
+    MigrationPathService.expects(:execute).returns(MigrationPathService::DEFAULT_MIGRATION_PATH)
   end
 
-  describe "when a ./.schema_migration_monitor file does not exist" do
+  it "should check the pending migrations" do
+    get_migrator_with_pending_migrations([])
+    SchemaMigrationMonitor::Monitor.new.execute
+  end
 
-    describe "and a ./config/database.yml does not exist" do
-      it "should raise an exception" do
-        expect { SchemaMigrationMonitor::Monitor.new }.to raise_error(SchemaMigrationMonitor::ConfigFileException)
-      end
+  describe "when there are no pending migrations" do
+    it "should do nothing" do
+      output_stream = get_output_stream_mock
+      output_stream.should_receive(:write).exactly(0).times
+      get_migrator_with_pending_migrations([])
+      SchemaMigrationMonitor::Monitor.new(output_stream).execute
     end
+  end
 
-    describe "and a ./config/database.yml does exist" do
-      it "should use the ./config/database.yml file" do
-
-      end
+  describe "when there are pending migrations" do
+    before(:each) do
+      get_migrator_with_pending_migrations(['20120101000000_fake_migration', '20120101000001_fake_migration_2'])
     end
-
-
+    it "should print a message to stdout" do
+      output_stream = get_output_stream_mock
+      output_stream.expects(:write).with('The following migration[s] need to be run 20120101000000_fake_migration, 20120101000001_fake_migration_2')
+      SchemaMigrationMonitor::Monitor.new(output_stream).execute
+    end
   end
 
-  describe "when a ./.schema_migration_monitor file does exist" do
+  def get_migrator_with_pending_migrations(pending_migrations)
+    mock_migrator = mock('migrator') 
+    mock_migrator.expects(:pending_migrations).returns(pending_migrations)
+    ActiveRecord::Migrator.expects(:new).returns(mock_migrator)
   end
+
+  def get_output_stream_mock
+    stdout_mock = mock('output_stream')
+    stdout_mock.stubs(:write)
+    stdout_mock
+  end
+
 end
