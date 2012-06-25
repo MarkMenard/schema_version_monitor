@@ -21,12 +21,15 @@ describe SchemaMigrationMonitor::Monitor do
   end
 
   describe "when there are pending migrations" do
+    let(:migrations) { ['20120101000000_fake_migration', '20120101000001_fake_migration_2'] }
+
     before(:each) do
-      get_migrator_with_pending_migrations(['20120101000000_fake_migration', '20120101000001_fake_migration_2'])
+      get_migrator_with_pending_migrations(migrations)
     end
+    
     it "should print a message to stdout" do
       output_stream = get_output_stream_mock
-      output_stream.expects(:write).with('The following migration[s] need to be run 20120101000000_fake_migration, 20120101000001_fake_migration_2')
+      output_stream.expects(:write).with("The following migration[s] need to be run #{migrations.join(', ')}")
       SchemaMigrationMonitor::Monitor.new(output_stream).execute
     end
   end
