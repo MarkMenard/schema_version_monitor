@@ -51,8 +51,7 @@ module SchemaMigrationMonitor
         memo
       end
 
-      @output_stream.write("\e[1;31m")
-      @output_stream.write("\n")
+      @output_stream.write("\e[1;31m\n")
       @output_stream.write("*" * (longest_line + 6) + "\n")
       text_lines.each do |line|
         @output_stream.write "** #{line}#{ " " * (longest_line - line.to_s.length) } **\n"
@@ -62,7 +61,7 @@ module SchemaMigrationMonitor
     end
 
     def prompt_user_text
-      res = "The following migration[s] need to be run:"
+      res = "The following migration(s) need to be run:"
       res << @pending_migrations.map { |migration| "\n  - #{migration.filename}" }.join
       #res << "\nWould you like to run these migrations now? [Y/N]"
       res
