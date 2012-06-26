@@ -33,16 +33,23 @@ describe SchemaMigrationMonitor::Monitor do
   end
 
   describe "when there are pending migrations" do
-    let(:migrations) { ['20120101000000_fake_migration', '20120101000001_fake_migration_2'] }
+    let(:migrations) { [mock('migration1', filename:'20120101000000_fake_migration')] }
 
     before(:each) do
       get_migrator_with_pending_migrations(migrations)
     end
-    
+
+    let(:output_stream) do
+      result = String.new
+      def result.write(arg)
+        self << arg
+      end
+      result
+    end
+        
     it "should print a message to stdout" do
-      output_stream = get_output_stream_mock
-      output_stream.expects(:write).with() { |text| text =~ /The following migration\[s\] need to be run/ }
       SchemaMigrationMonitor::Monitor.new(output_stream).execute
+      (output_stream =~ /The following migration\(s\) need to be run/).should_not == nil
     end
   end
 

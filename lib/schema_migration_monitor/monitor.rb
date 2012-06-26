@@ -17,17 +17,6 @@ module ActiveRecord
   end
 end
 
-
-# make a nice output for testing
-# **************************************
-# ** This is an example of the output **
-# ** It's multi-line too!             **
-# **************************************
-def star_puts(*args)
-end
-
-
-
 module SchemaMigrationMonitor
   class Monitor
     
