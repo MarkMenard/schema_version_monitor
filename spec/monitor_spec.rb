@@ -6,6 +6,15 @@ describe SchemaMigrationMonitor::Monitor do
     MigrationPathService.expects(:execute).returns(MigrationPathService::DEFAULT_MIGRATION_PATH)
   end
 
+  # describe "when ActiveRecord establishes a connection" do
+  #   it "should execute the schema migration monitor" do
+  #     SchemaMigrationMonitor::Monitor.expects(new: nil, execute: nil)
+  #     ActiveRecord::ConnectionAdapters::ConnectionHandler.stubs(:establish_connection_without_monitor)
+      
+  #     ActiveRecord::Base.establish_connection({:adapter => :asdf})
+  #   end
+  # end
+
   it "should check the pending migrations" do
     get_migrator_with_pending_migrations([])
     SchemaMigrationMonitor::Monitor.new.execute
@@ -36,6 +45,7 @@ describe SchemaMigrationMonitor::Monitor do
       SchemaMigrationMonitor::Monitor.new(output_stream).execute
     end
   end
+
 
   def get_migrator_with_pending_migrations(pending_migrations)
     mock_migrator = mock('migrator') 
