@@ -32,7 +32,7 @@ describe SchemaMigrationMonitor::Monitor do
     
     it "should print a message to stdout" do
       output_stream = get_output_stream_mock
-      output_stream.expects(:write).with("The following migration[s] need to be run #{migrations.join(', ')}")
+      output_stream.expects(:write).with() { |text| text =~ /The following migration\[s\] need to be run/ }
       SchemaMigrationMonitor::Monitor.new(output_stream).execute
     end
   end
@@ -45,9 +45,7 @@ describe SchemaMigrationMonitor::Monitor do
   end
 
   def get_output_stream_mock
-    stdout_mock = mock('output_stream')
-    stdout_mock.stubs(:write)
-    stdout_mock
+    mock('output_stream')
   end
 
 end
