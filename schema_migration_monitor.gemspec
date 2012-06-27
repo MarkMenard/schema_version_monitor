@@ -4,9 +4,9 @@ require File.expand_path('../lib/schema_migration_monitor/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Enable Labs"]
   gem.email         = ["info@enablelabs.com"]
-  gem.description   = %q{Make sure the test environment schema is up to date.}
-  gem.summary       = %q{Make sure the test environment schema is up to date.}
-  gem.homepage      = ""
+  gem.description   = %q{This gem is used to warn developers of pending schema migrations.}
+  gem.summary       = %q{This gem is used to warn developers of pending schema migrations.}
+  gem.homepage      = "https://github.com/EnableLabs/schema_version_monitor"
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
