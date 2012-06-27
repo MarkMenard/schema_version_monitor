@@ -9,7 +9,6 @@ describe MigrationPathService do
       end
 
       it "should verify a ./db/migrate directory exists" do
-        # NOTE : This test passes when MigrationPathService.execute has no code !!!! Why?
         Pathname.expects(:new).with('./db/migrate').returns( mock(exist?:true) )
         MigrationPathService.execute
       end
