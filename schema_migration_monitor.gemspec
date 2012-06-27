@@ -3,7 +3,7 @@ require File.expand_path('../lib/schema_migration_monitor/version', __FILE__)
 
 Gem::Specification.new do |gem|
   gem.authors       = ["Enable Labs"]
-  gem.email         = ["sa@enablelabs.com"]
+  gem.email         = ["info@enablelabs.com"]
   gem.description   = %q{Make sure the test environment schema is up to date.}
   gem.summary       = %q{Make sure the test environment schema is up to date.}
   gem.homepage      = ""
